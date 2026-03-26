@@ -2,13 +2,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB-sZsezoQA6VhXTjMxNmKJ3Q3PfpmtkgE",
-  authDomain: "dongku-kcg.firebaseapp.com",
-  projectId: "dongku-kcg",
-  storageBucket: "dongku-kcg.firebasestorage.app",
-  messagingSenderId: "713862695975",
-  appId: "1:713862695975:web:94a2135223f6350a34d202",
-  measurementId: "G-PLGTB6YF7M"
+  apiKey: "AIzaSyAJHPzYe6rJVuVhfaFT1L0L-I48ifGm_pM",
+  authDomain: "kcg-competency-diagnosis.firebaseapp.com",
+  projectId: "kcg-competency-diagnosis",
+  storageBucket: "kcg-competency-diagnosis.firebasestorage.app",
+  messagingSenderId: "648644260799",
+  appId: "1:648644260799:web:260cd34647ea00d8f9a70a",
+  measurementId: "G-1XV5VSXFYN"
 };
 
 const app = initializeApp(firebaseConfig);
