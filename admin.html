@@ -452,7 +452,7 @@
         <div class="stat-card">
           <div class="stat-label">전체 평균 점수</div>
           <div class="stat-value" id="averageScore">-</div>
-          <div class="stat-foot" id="averageScoreFoot">현재 조회 결과 평균 기준</div>
+          <div class="stat-foot">현재 조회 결과 평균 기준</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">최고 점수</div>
@@ -510,7 +510,7 @@
                 <th style="width: 14%;">직급</th>
                 <th style="width: 14%;">부서</th>
                 <th style="width: 14%;">제출일</th>
-                <th style="width: 10%;">평균 / 비교</th>
+                <th style="width: 10%;">평균 점수</th>
                 <th style="width: 12%;">관리</th>
               </tr>
             </thead>
@@ -579,45 +579,6 @@ const CATEGORY_NAMES = [
 let cachedData = [];
 let filteredData = [];
 
-function toNumber(value) {
-  const num = Number(value);
-  return Number.isFinite(num) ? num : 0;
-}
-
-function getAverageFromItems(items = []) {
-  if (!items.length) return 0;
-  const total = items.reduce((sum, item) => sum + toNumber(item.averageScore), 0);
-  return Number((total / items.length).toFixed(2));
-}
-
-function formatScore(value) {
-  return `${toNumber(value).toFixed(2)}점`;
-}
-
-function formatDiff(value) {
-  const num = toNumber(value);
-  return `${num > 0 ? "+" : ""}${num.toFixed(2)}점`;
-}
-
-function getDiffColor(value) {
-  if (value > 0) return "#16a34a";
-  if (value < 0) return "#dc2626";
-  return "#64748b";
-}
-
-function getComparison(item, baselineAverage = getAverageFromItems(cachedData)) {
-  const myAverage = toNumber(item.averageScore);
-  const overallAverage = toNumber(baselineAverage);
-  const diff = Number((myAverage - overallAverage).toFixed(2));
-
-  return {
-    overallAverage,
-    myAverage,
-    diff
-  };
-}
-
-
 function getScoreClass(score) {
   if (score >= 4) return "score-high";
   if (score >= 3) return "score-mid";
@@ -678,27 +639,21 @@ function checkLogin() {
 }
 
 function renderStats(data) {
-  const filteredAverage = getAverageFromItems(data);
-  const overallAverage = getAverageFromItems(cachedData);
-
   document.getElementById("totalCount").innerText = data.length;
 
   if (!data.length) {
     document.getElementById("averageScore").innerText = "-";
-    document.getElementById("averageScoreFoot").innerText = "현재 조회 결과가 없습니다.";
     document.getElementById("highestScore").innerText = "-";
     document.getElementById("filteredSummaryText").innerText = "현재 조회 결과가 없어 상세 리포트를 생성할 수 없습니다.";
     return;
   }
 
-  const highest = Math.max(...data.map(item => toNumber(item.averageScore)));
+  const avg = data.reduce((sum, item) => sum + (item.averageScore || 0), 0) / data.length;
+  const highest = Math.max(...data.map(item => item.averageScore || 0));
 
-  document.getElementById("averageScore").innerText = filteredAverage.toFixed(2);
-  document.getElementById("averageScoreFoot").innerText =
-    `현재 조회 결과 평균 / 전체 DB 평균 ${overallAverage.toFixed(2)}점`;
+  document.getElementById("averageScore").innerText = avg.toFixed(2);
   document.getElementById("highestScore").innerText = highest.toFixed(2);
-  document.getElementById("filteredSummaryText").innerText =
-    `현재 ${data.length}건 조회 결과 기준 리포트를 생성합니다.`;
+  document.getElementById("filteredSummaryText").innerText = `현재 ${data.length}건 조회 결과 기준 리포트를 생성합니다.`;
 }
 
 function buildExportRows(data) {
@@ -812,10 +767,6 @@ function openDetailWindow(item) {
     return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2));
   });
 
-  const overallAverage = getAverageFromItems(allItems);
-  const myAverage = toNumber(item.averageScore);
-  const overallDiff = Number((myAverage - overallAverage).toFixed(2));
-
   const categoryBlocks = CATEGORY_NAMES.map((category, categoryIndex) => {
     const baseIndex = categoryIndex * 3;
     const averageData = [0, 1, 2].map(offset => {
@@ -844,33 +795,13 @@ function openDetailWindow(item) {
     };
   });
 
-  const summaryCards = (item.results || []).map((result, index) => {
-    const myScore = Number(result.score || 0);
-    const overallScore = Number(averageCategoryScores[index] || 0);
-    const diff = Number((myScore - overallScore).toFixed(2));
-
+  const summaryCards = (item.results || []).map(result => {
+    const score = Number(result.score || 0);
     return `
       <div class="result-item">
-        <div class="result-row" style="margin-bottom:10px;">
+        <div class="result-row">
           <div class="result-name">${escapeHtml(result.category)}</div>
-          <div class="result-score">${myScore.toFixed(2)}점</div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
-          <div style="padding:10px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
-            <div style="font-size:11px;color:#64748b;margin-bottom:4px;">전체평균</div>
-            <div style="font-weight:800;">${overallScore.toFixed(2)}점</div>
-          </div>
-
-          <div style="padding:10px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
-            <div style="font-size:11px;color:#64748b;margin-bottom:4px;">내평균</div>
-            <div style="font-weight:800;">${myScore.toFixed(2)}점</div>
-          </div>
-
-          <div style="padding:10px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
-            <div style="font-size:11px;color:#64748b;margin-bottom:4px;">편차</div>
-            <div style="font-weight:800;color:${getDiffColor(diff)};">${formatDiff(diff)}</div>
-          </div>
+          <div class="result-score">${score.toFixed(2)}점</div>
         </div>
       </div>
     `;
@@ -1224,25 +1155,9 @@ function openDetailWindow(item) {
                 <div class="report-title">응답 상세 결과 리포트</div>
                 <div class="report-subtitle">개인 응답 프로필과 카테고리별 진단 결과를 정리한 PDF 보고서용 화면입니다.</div>
               </div>
-              <div class="report-score" style="min-width:360px;">
-                <div class="report-score-label">점수 비교 요약</div>
-
-                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
-                  <div style="padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;text-align:center;">
-                    <div style="font-size:11px;color:#64748b;margin-bottom:6px;">전체평균</div>
-                    <div style="font-size:24px;font-weight:900;color:#111827;">${overallAverage.toFixed(2)}</div>
-                  </div>
-
-                  <div style="padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;text-align:center;">
-                    <div style="font-size:11px;color:#64748b;margin-bottom:6px;">내평균</div>
-                    <div style="font-size:24px;font-weight:900;color:#111827;">${myAverage.toFixed(2)}</div>
-                  </div>
-
-                  <div style="padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;text-align:center;">
-                    <div style="font-size:11px;color:#64748b;margin-bottom:6px;">편차</div>
-                    <div style="font-size:24px;font-weight:900;color:${getDiffColor(overallDiff)};">${formatDiff(overallDiff)}</div>
-                  </div>
-                </div>
+              <div class="report-score">
+                <div class="report-score-label">전체 평균 점수</div>
+                <div><span class="report-score-value">${Number(item.averageScore || 0).toFixed(2)}</span><span class="report-score-unit">점</span></div>
               </div>
             </div>
             <div class="profile-layout">
@@ -1431,8 +1346,6 @@ function openDetailWindow(item) {
 
 function renderTable(data) {
   const tbody = document.getElementById("tableBody");
-  const overallAverage = getAverageFromItems(cachedData);
-
   document.getElementById("resultCountText").innerText = `${data.length}건 표시`;
 
   if (!data.length) {
@@ -1445,8 +1358,8 @@ function renderTable(data) {
   }
 
   tbody.innerHTML = data.map(item => {
-    const { myAverage, diff } = getComparison(item, overallAverage);
-    const scoreClass = getScoreClass(myAverage);
+    const avg = Number(item.averageScore || 0);
+    const scoreClass = getScoreClass(avg);
 
     return `
       <tr>
@@ -1460,15 +1373,7 @@ function renderTable(data) {
         <td>${escapeHtml(item.position || "직급 없음")}</td>
         <td>${escapeHtml(item.dept || "부서 없음")}</td>
         <td>${escapeHtml(formatDate(item.createdAt))}</td>
-        <td>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <span class="score-chip ${scoreClass}">${myAverage.toFixed(2)}점</span>
-            <div style="font-size:12px;color:#64748b;">전체 ${overallAverage.toFixed(2)}점</div>
-            <div style="font-size:12px;font-weight:800;color:${getDiffColor(diff)};">
-              편차 ${formatDiff(diff)}
-            </div>
-          </div>
-        </td>
+        <td><span class="score-chip ${scoreClass}">${avg.toFixed(2)}점</span></td>
         <td>
           <div class="row-actions">
             <button class="primary" data-action="view" data-id="${item.id}">상세보기</button>
@@ -1551,6 +1456,7 @@ async function loadData() {
     document.getElementById("totalCount").innerText = "-";
     document.getElementById("averageScore").innerText = "-";
     document.getElementById("highestScore").innerText = "-";
+    document.getElementById("latestDate").innerText = "-";
     tbody.innerHTML = `
       <tr>
         <td colspan="7" class="empty">데이터를 불러오지 못했습니다. Firestore 설정이나 권한을 확인해주세요.</td>
