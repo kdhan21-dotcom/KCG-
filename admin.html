@@ -624,6 +624,11 @@
   margin: 10mm;
 }
 
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
 @media print {
   html, body {
     width: 210mm;
@@ -714,22 +719,30 @@
   .section-title {
     font-size: 16pt !important;
     margin-bottom: 10px !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
   }
 
   .radar-wrap {
     height: 250px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .result-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .mini-grid {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
-    break-before: page;
-    page-break-before: always;
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .mini-card,
