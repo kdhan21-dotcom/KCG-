@@ -2,6 +2,7 @@ import { db } from "./firebase-config.js";
 import {
   addDoc,
   collection,
+  getDocs,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -224,6 +225,88 @@ function calculateAverageScore(results) {
   return Number((total / results.length).toFixed(2));
 }
 
+function toNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function formatScore(value) {
+  return `${toNumber(value).toFixed(2)}점`;
+}
+
+function formatDiff(value) {
+  const num = toNumber(value);
+  return `${num > 0 ? "+" : ""}${num.toFixed(2)}점`;
+}
+
+function getDiffColor(diff) {
+  if (diff > 0) return "#16a34a";
+  if (diff < 0) return "#dc2626";
+  return "#64748b";
+}
+
+async function getBenchmarkStats(myResults) {
+  try {
+    const snapshot = await getDocs(collection(db, "surveyResponses"));
+
+    const rows = snapshot.docs
+      .map((doc) => doc.data())
+      .filter(
+        (item) =>
+          Array.isArray(item.results) &&
+          item.results.length === categories.length
+      );
+
+    if (!rows.length) {
+      return {
+        hasBenchmark: false,
+        sourceCount: 0,
+        totalAverage: calculateAverageScore(myResults),
+        categoryAverages: myResults.map((item) => ({ ...item }))
+      };
+    }
+
+    const categoryTotals = Array(categories.length).fill(0);
+    let overallTotal = 0;
+
+    rows.forEach((row) => {
+      const rowResults = row.results.map((item) => ({
+        category: item.category,
+        score: toNumber(item.score)
+      }));
+
+      const rowAverage = Number.isFinite(Number(row.averageScore))
+        ? toNumber(row.averageScore)
+        : calculateAverageScore(rowResults);
+
+      overallTotal += rowAverage;
+
+      rowResults.forEach((item, idx) => {
+        categoryTotals[idx] += item.score;
+      });
+    });
+
+    return {
+      hasBenchmark: true,
+      sourceCount: rows.length,
+      totalAverage: Number((overallTotal / rows.length).toFixed(2)),
+      categoryAverages: categories.map((category, idx) => ({
+        category,
+        score: Number((categoryTotals[idx] / rows.length).toFixed(2))
+      }))
+    };
+  } catch (error) {
+    console.error("전체 평균 조회 실패:", error);
+
+    return {
+      hasBenchmark: false,
+      sourceCount: 0,
+      totalAverage: calculateAverageScore(myResults),
+      categoryAverages: myResults.map((item) => ({ ...item }))
+    };
+  }
+}
+
 function getLevel(avg) {
   if (avg >= 4.2) return { label: "탁월한 강점", color: "green" };
   if (avg >= 3.6) return { label: "안정적 역량", color: "blue" };
@@ -231,19 +314,32 @@ function getLevel(avg) {
   return { label: "우선 개발 과제", color: "red" };
 }
 
-function showResult() {
+async function showResult() {
   const email = document.getElementById("email").value;
   const name = document.getElementById("name").value;
   const company = document.getElementById("company").value;
   const position = document.getElementById("position").value;
   const dept = document.getElementById("dept").value;
+  const survey = document.getElementById("survey");
 
   if (Object.keys(answers).length < questions.length) {
     alert("모든 문항에 응답해주세요.");
     return;
   }
 
-  const results = calculateResults();
+  survey.innerHTML = `
+    <div class="card">
+      <h3>📊 진단 결과를 분석하는 중입니다...</h3>
+      <p style="color:#64748b;margin-top:8px;">
+        전체 평균과 비교 데이터를 불러오고 있습니다.
+      </p>
+    </div>
+  `;
+
+  const myResults = calculateResults();
+  const myAverage = calculateAverageScore(myResults);
+  const benchmark = await getBenchmarkStats(myResults);
+  const overallDiff = Number((myAverage - benchmark.totalAverage).toFixed(2));
 
   let html = `
     <div class="card" style="margin-bottom:16px;">
@@ -277,6 +373,42 @@ function showResult() {
       </div>
     </div>
 
+    <div class="card" style="margin-bottom:16px;">
+      <h3>전체 비교 요약</h3>
+
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:12px;
+        margin-top:16px;
+      ">
+        <div style="padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;">
+          <div style="font-size:12px;color:#64748b;margin-bottom:6px;">전체평균</div>
+          <div style="font-size:22px;font-weight:700;">${formatScore(benchmark.totalAverage)}</div>
+        </div>
+
+        <div style="padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;">
+          <div style="font-size:12px;color:#64748b;margin-bottom:6px;">내평균</div>
+          <div style="font-size:22px;font-weight:700;">${formatScore(myAverage)}</div>
+        </div>
+
+        <div style="padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;">
+          <div style="font-size:12px;color:#64748b;margin-bottom:6px;">편차</div>
+          <div style="font-size:22px;font-weight:700;color:${getDiffColor(overallDiff)};">
+            ${formatDiff(overallDiff)}
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:13px;color:#64748b;">
+        ${
+          benchmark.hasBenchmark
+            ? `비교 기준: 누적 응답 ${benchmark.sourceCount}건`
+            : "비교 가능한 기존 응답이 없어 현재는 내 점수를 기준으로 표시합니다."
+        }
+      </div>
+    </div>
+
     <div style="margin-top:20px;">
       <button id="submitButton" onclick="submitResult()">제출하기</button>
     </div>
@@ -286,16 +418,45 @@ function showResult() {
   `;
 
   detailMap.forEach((cat, idx) => {
-    const avg = results[idx].score;
-    const level = getLevel(avg);
+    const myScore = myResults[idx].score;
+    const totalScore = benchmark.categoryAverages[idx]?.score ?? myScore;
+    const diff = Number((myScore - totalScore).toFixed(2));
+    const level = getLevel(myScore);
 
     html += `
       <div class="result-card">
         <div class="result-title">${cat.title}</div>
+
         <div class="result-score">
-          ${avg.toFixed(2)}점
+          ${formatScore(myScore)}
           <span class="badge ${level.color}">${level.label}</span>
         </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(3, minmax(0, 1fr));
+          gap:8px;
+          margin-top:12px;
+          margin-bottom:12px;
+        ">
+          <div style="padding:10px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div style="font-size:12px;color:#64748b;">전체평균</div>
+            <div style="font-weight:700;margin-top:4px;">${formatScore(totalScore)}</div>
+          </div>
+
+          <div style="padding:10px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div style="font-size:12px;color:#64748b;">내평균</div>
+            <div style="font-weight:700;margin-top:4px;">${formatScore(myScore)}</div>
+          </div>
+
+          <div style="padding:10px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div style="font-size:12px;color:#64748b;">편차</div>
+            <div style="font-weight:700;margin-top:4px;color:${getDiffColor(diff)};">
+              ${formatDiff(diff)}
+            </div>
+          </div>
+        </div>
+
         <div class="result-desc">
           ${cat.desc[0]}<br>
           ${cat.desc[1]}<br>
@@ -310,7 +471,7 @@ function showResult() {
     </div>
   `;
 
-  document.getElementById("survey").innerHTML = html;
+  survey.innerHTML = html;
 }
 
 async function submitResult() {
