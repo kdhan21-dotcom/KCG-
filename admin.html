@@ -1,407 +1,161 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KCG Admin Dashboard</title>
-
 <style>
   * { box-sizing: border-box; }
-
   :root {
-    --bg: #f8fafc;
-    --panel: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --line: #e2e8f0;
-    --primary: #2563eb;
-    --primary-soft: #dbeafe;
-    --danger: #dc2626;
-    --danger-soft: #fee2e2;
-    --success: #16a34a;
-    --success-soft: #dcfce7;
-    --warn: #d97706;
-    --warn-soft: #fef3c7;
-    --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    --bg:#f8fafc;
+    --panel:#ffffff;
+    --line:#e2e8f0;
+    --text:#0f172a;
+    --muted:#64748b;
+    --primary:#2563eb;
+    --primary-soft:#dbeafe;
+    --danger:#dc2626;
+    --danger-soft:#fee2e2;
+    --success:#16a34a;
+    --success-soft:#dcfce7;
+    --warn:#d97706;
+    --warn-soft:#fef3c7;
+    --shadow:0 18px 40px rgba(15,23,42,.08);
   }
-
   body {
-    margin: 0;
-    min-width: 1280px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin:0;
+    min-width:1280px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--text);
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,0.10), transparent 28%),
+      radial-gradient(circle at top left, rgba(37,99,235,.10), transparent 28%),
       linear-gradient(180deg, #f8fbff 0%, #f8fafc 100%);
-    color: var(--text);
   }
-
-  button, input, select {
-    font-family: inherit;
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
+  button,input,select { font: inherit; }
+  .hidden { display:none !important; }
   .login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
   }
-
   .login-card {
-    width: 100%;
-    max-width: 460px;
-    background: rgba(255,255,255,0.94);
-    border: 1px solid rgba(226,232,240,0.9);
-    border-radius: 28px;
-    box-shadow: var(--shadow);
-    padding: 32px;
-    backdrop-filter: blur(10px);
+    width:100%; max-width:460px;
+    padding:32px;
+    border-radius:28px;
+    background:rgba(255,255,255,.95);
+    border:1px solid rgba(226,232,240,.9);
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(10px);
   }
-
   .login-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: var(--primary-soft);
-    color: #1d4ed8;
-    font-size: 12px;
-    font-weight: 800;
-    margin-bottom: 16px;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 12px; border-radius:999px;
+    background:var(--primary-soft); color:#1d4ed8;
+    font-size:12px; font-weight:800; margin-bottom:16px;
   }
-
-  .login-card h1 {
-    margin: 0;
-    font-size: 30px;
-    letter-spacing: -0.04em;
-  }
-
-  .login-form {
-    margin-top: 24px;
-    display: grid;
-    gap: 14px;
-  }
-
+  .login-card h1 { margin:0; font-size:30px; letter-spacing:-.04em; }
+  .login-form { margin-top:24px; display:grid; gap:14px; }
   .field label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #334155;
+    display:block; margin-bottom:8px;
+    font-size:13px; font-weight:700; color:#334155;
   }
-
-  .field input {
-    width: 100%;
-    height: 48px;
-    border: 1px solid var(--line);
-    background: white;
-    border-radius: 14px;
-    padding: 0 14px;
-    font-size: 14px;
-    outline: none;
+  .field input, .search-row input, .search-row select, .filter-row input, .action-row select {
+    width:100%; height:46px; padding:0 14px;
+    border:1px solid var(--line); border-radius:14px;
+    background:white; color:var(--text); outline:none;
   }
-
-  .field input:focus {
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+  .field input:focus, .search-row input:focus, .search-row select:focus, .filter-row input:focus, .action-row select:focus {
+    border-color:#93c5fd; box-shadow:0 0 0 4px rgba(37,99,235,.12);
   }
-
-  .login-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
   .login-error {
-    font-size: 13px;
-    margin-top: 12px;
-    color: var(--danger);
-    font-weight: 700;
-    min-height: 18px;
+    min-height:18px; margin-top:12px;
+    font-size:13px; font-weight:700; color:var(--danger);
   }
-
-  .shell {
-    max-width: 1540px;
-    margin: 0 auto;
-    padding: 28px;
-  }
-
+  .shell { max-width:1540px; margin:0 auto; padding:28px; }
   .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 24px;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:24px; margin-bottom:24px;
   }
-
-  .title-wrap h1 {
-    margin: 0;
-    font-size: 34px;
-    letter-spacing: -0.04em;
-  }
-
-  .title-wrap p {
-    margin: 8px 0 0;
-    color: var(--muted);
-    font-size: 15px;
-  }
-
-  .top-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
+  .title-wrap h1 { margin:0; font-size:34px; letter-spacing:-.04em; }
+  .title-wrap p { margin:8px 0 0; color:var(--muted); font-size:15px; }
+  .top-actions { display:flex; gap:10px; }
   button {
-    border: none;
-    border-radius: 12px;
-    padding: 11px 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: .18s ease;
+    border:none; border-radius:12px; padding:11px 16px;
+    font-weight:700; cursor:pointer; transition:.18s ease;
   }
-
-  button:hover {
-    transform: translateY(-1px);
-  }
-
+  button:hover { transform:translateY(-1px); }
   .primary {
-    background: linear-gradient(135deg, #2563eb, #0f6bff);
-    color: white;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+    background:linear-gradient(135deg,#2563eb,#0f6bff);
+    color:#fff; box-shadow:0 10px 25px rgba(37,99,235,.18);
   }
-
-  .secondary {
-    background: #e2e8f0;
-    color: #0f172a;
-  }
-
-  .danger {
-    background: var(--danger);
-    color: white;
-  }
-
-  .ghost {
-    background: white;
-    color: #334155;
-    border: 1px solid var(--line);
-  }
-
+  .secondary { background:#e2e8f0; color:#0f172a; }
+  .ghost { background:#fff; color:#334155; border:1px solid var(--line); }
+  .danger { background:var(--danger); color:#fff; }
   .panel {
-    background: rgba(255,255,255,0.9);
-    border: 1px solid rgba(226,232,240,0.9);
-    border-radius: 22px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(10px);
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(226,232,240,.9);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(10px);
   }
-
-  .panel-header {
-    padding: 22px 24px 0;
-  }
-
-  .panel-title {
-    margin: 0;
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-
-  .panel-subtitle {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-
   .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px; margin-bottom:24px;
   }
-
   .stat-card {
-    padding: 18px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, #ffffff, #f8fafc);
-    border: 1px solid var(--line);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    padding:18px; border-radius:18px;
+    background:linear-gradient(180deg,#fff,#f8fafc);
+    border:1px solid var(--line);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
   }
-
-  .stat-label {
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 10px;
-  }
-
-  .stat-value {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-  }
-
-  .stat-foot {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .action-stat-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
+  .stat-label { color:var(--muted); font-size:13px; margin-bottom:10px; }
+  .stat-value { font-size:28px; font-weight:800; letter-spacing:-.04em; }
+  .stat-foot { margin-top:8px; font-size:12px; color:var(--muted); }
+  .action-stat-card { display:flex; flex-direction:column; justify-content:space-between; gap:12px; }
   .action-stat-button {
-    width: 100%;
-    min-height: 48px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #0f172a, #1d4ed8);
-    color: white;
-    font-size: 14px;
-    font-weight: 800;
-    box-shadow: 0 10px 24px rgba(29, 78, 216, 0.18);
+    width:100%; min-height:48px; border-radius:14px;
+    background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff;
+    font-size:14px; font-weight:800; box-shadow:0 10px 24px rgba(29,78,216,.18);
   }
-
-  .toolbar {
-    padding: 18px 24px 20px;
-    display: grid;
-    gap: 12px;
-  }
-
-  .search-row,
-  .filter-row,
-  .action-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .search-row input,
-  .search-row select,
-  .filter-row input,
-  .action-row select {
-    height: 44px;
-    border: 1px solid var(--line);
-    background: white;
-    border-radius: 12px;
-    padding: 0 14px;
-    font-size: 14px;
-    color: var(--text);
-    outline: none;
-  }
-
-  .search-row input,
-  .filter-row input {
-    flex: 1;
-  }
-
-  .search-row input:focus,
-  .search-row select:focus,
-  .filter-row input:focus,
-  .action-row select:focus {
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
-  }
-
-  .result-meta {
-    color: var(--muted);
-    font-size: 13px;
-    margin-left: auto;
-  }
-
-  .table-wrap {
-    padding: 0 24px 24px;
-  }
-
+  .panel-header { padding:22px 24px 0; }
+  .panel-title { margin:0; font-size:19px; font-weight:800; letter-spacing:-.02em; }
+  .panel-subtitle { margin:6px 0 0; color:var(--muted); font-size:13px; }
+  .toolbar { padding:18px 24px 20px; display:grid; gap:12px; }
+  .search-row,.filter-row,.action-row { display:flex; gap:12px; align-items:center; }
+  .search-row input,.filter-row input { flex:1; }
+  .result-meta { color:var(--muted); font-size:13px; margin-left:auto; }
+  .table-wrap { padding:0 24px 24px; }
   table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    overflow: hidden;
+    width:100%; border-collapse:collapse; table-layout:fixed;
+    background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden;
   }
-
   thead th {
-    background: #f8fafc;
-    color: var(--muted);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-align: left;
-    padding: 15px 16px;
-    border-bottom: 1px solid var(--line);
+    background:#f8fafc; color:var(--muted);
+    font-size:12px; text-transform:uppercase; letter-spacing:.06em;
+    text-align:left; padding:15px 16px; border-bottom:1px solid var(--line);
   }
-
   tbody td {
-    padding: 16px;
-    border-bottom: 1px solid var(--line);
-    vertical-align: middle;
-    font-size: 14px;
+    padding:16px; border-bottom:1px solid var(--line);
+    vertical-align:middle; font-size:14px;
   }
-
-  tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  tbody tr:hover {
-    background: #f8fbff;
-  }
-
-  .name-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .name-main {
-    font-weight: 800;
-    color: var(--text);
-  }
-
-  .name-sub {
-    color: var(--muted);
-    font-size: 12px;
-  }
-
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover { background:#f8fbff; }
+  .name-cell { display:flex; flex-direction:column; gap:4px; }
+  .name-main { font-weight:800; color:var(--text); }
+  .name-sub { color:var(--muted); font-size:12px; }
   .score-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 82px;
-    padding: 7px 11px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:82px; padding:7px 11px; border-radius:999px;
+    font-size:12px; font-weight:800;
   }
-
-  .score-high { background: var(--success-soft); color: #166534; }
-  .score-mid { background: var(--warn-soft); color: #92400e; }
-  .score-low { background: var(--danger-soft); color: #991b1b; }
-
-  .row-actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .row-actions button {
-    padding: 9px 12px;
-    border-radius: 10px;
-    font-size: 13px;
-  }
-
-  .empty {
-    padding: 48px 24px;
-    text-align: center;
-    color: var(--muted);
-  }
+  .score-high { background:var(--success-soft); color:#166534; }
+  .score-mid { background:var(--warn-soft); color:#92400e; }
+  .score-low { background:var(--danger-soft); color:#991b1b; }
+  .row-actions { display:flex; gap:8px; }
+  .row-actions button { padding:9px 12px; border-radius:10px; font-size:13px; }
+  .empty { padding:48px 24px; text-align:center; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -409,23 +163,17 @@
     <div class="login-card">
       <div class="login-badge">🔒 관리자 전용</div>
       <h1>KCG Admin Login</h1>
-
       <form class="login-form" id="loginForm">
         <div class="field">
           <label for="adminId">아이디</label>
-          <input id="adminId" type="text" autocomplete="username" placeholder="관리자 아이디 입력">
+          <input id="adminId" type="text" autocomplete="username" placeholder="관리자 아이디 입력" />
         </div>
-
         <div class="field">
           <label for="adminPassword">비밀번호</label>
-          <input id="adminPassword" type="password" autocomplete="current-password" placeholder="비밀번호 입력">
+          <input id="adminPassword" type="password" autocomplete="current-password" placeholder="비밀번호 입력" />
         </div>
-
-        <div class="login-actions">
-          <button type="submit" class="primary" style="flex:1;">로그인</button>
-        </div>
+        <button type="submit" class="primary">로그인</button>
       </form>
-
       <div class="login-error" id="loginError"></div>
     </div>
   </div>
@@ -435,7 +183,7 @@
       <div class="topbar">
         <div class="title-wrap">
           <h1>KCG 관리자 대시보드</h1>
-          <p>데스크탑 환경 기준으로 설계된 응답 관리 화면입니다. 제출 현황, 평균 점수, 상세 결과를 한 번에 관리하실 수 있습니다.</p>
+          <p>제출 현황, 검색 결과, 전체 평균 대비 개인 편차를 한 번에 확인하실 수 있습니다.</p>
         </div>
         <div class="top-actions">
           <button class="secondary" id="refreshButton">데이터 새로고침</button>
@@ -447,12 +195,12 @@
         <div class="stat-card">
           <div class="stat-label">총 응답 수</div>
           <div class="stat-value" id="totalCount">-</div>
-          <div class="stat-foot">현재 조회된 응답 기준</div>
+          <div class="stat-foot">현재 조회 결과 기준</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">전체 평균 점수</div>
+          <div class="stat-label">조회 결과 평균</div>
           <div class="stat-value" id="averageScore">-</div>
-          <div class="stat-foot">현재 조회 결과 평균 기준</div>
+          <div class="stat-foot" id="averageScoreFoot">전체 DB 평균과 비교해서 표시합니다.</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">최고 점수</div>
@@ -471,12 +219,12 @@
       <section class="panel">
         <div class="panel-header">
           <h2 class="panel-title">응답 목록</h2>
-          <p class="panel-subtitle">자유검색과 회사명/직급/부서명 개별 필터를 조합해서 원하는 응답자만 조회하실 수 있습니다.</p>
+          <p class="panel-subtitle">이름/이메일 자유검색과 회사명/직급/부서명 필터를 조합해서 조회하실 수 있습니다.</p>
         </div>
 
         <div class="toolbar">
           <div class="search-row">
-            <input id="searchInput" type="text" placeholder="이름 또는 이메일로 자유검색">
+            <input id="searchInput" type="text" placeholder="이름 또는 이메일로 자유검색" />
             <select id="scoreFilter">
               <option value="all">전체 점수대</option>
               <option value="high">고득점 (4.0 이상)</option>
@@ -486,9 +234,9 @@
           </div>
 
           <div class="filter-row">
-            <input id="companyFilter" type="text" placeholder="회사명 필터 (예: 네이버)">
-            <input id="positionFilter" type="text" placeholder="직급 필터 (예: 대리)">
-            <input id="deptFilter" type="text" placeholder="부서명 필터 (예: 개발본부)">
+            <input id="companyFilter" type="text" placeholder="회사명 필터 (예: 네이버)" />
+            <input id="positionFilter" type="text" placeholder="직급 필터 (예: 대리)" />
+            <input id="deptFilter" type="text" placeholder="부서명 필터 (예: 개발본부)" />
           </div>
 
           <div class="action-row">
@@ -505,19 +253,17 @@
           <table>
             <thead>
               <tr>
-                <th style="width: 18%;">이름 / 이메일</th>
-                <th style="width: 18%;">회사명</th>
-                <th style="width: 14%;">직급</th>
-                <th style="width: 14%;">부서</th>
-                <th style="width: 14%;">제출일</th>
-                <th style="width: 10%;">평균 점수</th>
-                <th style="width: 12%;">관리</th>
+                <th style="width:18%;">이름 / 이메일</th>
+                <th style="width:18%;">회사명</th>
+                <th style="width:14%;">직급</th>
+                <th style="width:14%;">부서</th>
+                <th style="width:14%;">제출일</th>
+                <th style="width:10%;">평균 / 비교</th>
+                <th style="width:12%;">관리</th>
               </tr>
             </thead>
             <tbody id="tableBody">
-              <tr>
-                <td colspan="7" class="empty">데이터를 불러오는 중...</td>
-              </tr>
+              <tr><td colspan="7" class="empty">데이터를 불러오는 중...</td></tr>
             </tbody>
           </table>
         </div>
@@ -525,1012 +271,671 @@
     </div>
   </div>
 
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-<script type="module">
-import { db } from "./firebase-config.js";
-import { adminAuthConfig } from "./admin-auth-config.js";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  orderBy,
-  query
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { adminAuthConfig } from "./admin-auth-config.js";
+    import {
+      collection,
+      deleteDoc,
+      doc,
+      getDocs,
+      orderBy,
+      query
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-const LOGIN_STORAGE_KEY = "kcgAdminLoggedIn";
-const QUESTION_TEXTS = [
-  "나는 지금 느끼는 감정을 비교적 정확한 단어로 표현할 수 있다.",
-  "기분이 좋지 않을 때, 그것이 불안·짜증·실망·혼란 중 무엇에 가까운지 구분할 수 있다.",
-  "중요한 대화나 결정 전에 내 감정 상태를 점검하는 편이다.",
-  "나는 스트레스를 받을 때 반복적으로 나타나는 나의 반응 패턴을 알고 있다.",
-  "특정 사람이나 상황에서 내가 예민해지는 이유를 어느 정도 설명할 수 있다.",
-  "후회했던 행동이 어떤 상황에서 반복되는지 인식하고 있다.",
-  "말하거나 행동하기 전에 내 선택의 결과를 먼저 생각하는 편이다.",
-  "감정이 강하게 올라와도 단기 영향과 장기 영향을 구분해 보려고 한다.",
-  "내 결정이 나뿐 아니라 팀과 관계에 미칠 영향까지 고려한다.",
-  "감정이 격해져도 즉각 반응하지 않고 한 템포 멈출 수 있다.",
-  "긴장이나 압박을 느낄 때 그것을 준비와 집중의 에너지로 전환하려고 한다.",
-  "감정 때문에 판단이 흐려질 때 스스로 균형을 회복하는 방법이 있다.",
-  "외부 보상이 크지 않아도 일이 의미 있다고 느끼면 몰입할 수 있다.",
-  "나는 목표를 추진할 때 스스로 납득할 만한 이유를 찾는 편이다.",
-  "누가 시켜서보다 내가 중요하다고 느끼는 일에 더 지속적으로 힘을 낸다.",
-  "문제가 생기면 불가능한 이유보다 가능한 대안을 먼저 찾으려 한다.",
-  "실패나 실수를 겪어도 배울 점을 찾고 다시 시도하려는 편이다.",
-  "불확실한 상황에서도 내가 통제할 수 있는 부분에 집중한다.",
-  "상대의 말뿐 아니라 그 뒤에 있는 감정까지 이해하려고 노력한다.",
-  "누군가 부정적으로 반응할 때도 그 사람 입장에서 이유를 생각해본다.",
-  "피드백이나 조언을 할 때 상대의 감정 상태를 고려하는 편이다.",
-  "나는 일상의 업무를 개인적 가치나 더 큰 목적과 연결해 생각하려 한다.",
-  "중요한 선택에서는 ‘무엇이 유리한가’뿐 아니라 ‘무엇이 의미 있는가’도 본다.",
-  "단기 성과보다 장기적으로 옳고 가치 있는 방향을 중시하는 편이다."
-];
-const CATEGORY_NAMES = [
-  "감정식별력",
-  "패턴인식",
-  "결과예측",
-  "감정조절·활용",
-  "내적동기",
-  "낙관성",
-  "공감",
-  "목적지향"
-];
+    const LOGIN_STORAGE_KEY = "kcgAdminLoggedIn";
+    const QUESTION_TEXTS = [
+      "나는 지금 느끼는 감정을 비교적 정확한 단어로 표현할 수 있다.",
+      "기분이 좋지 않을 때, 그것이 불안·짜증·실망·혼란 중 무엇에 가까운지 구분할 수 있다.",
+      "중요한 대화나 결정 전에 내 감정 상태를 점검하는 편이다.",
+      "나는 스트레스를 받을 때 반복적으로 나타나는 나의 반응 패턴을 알고 있다.",
+      "특정 사람이나 상황에서 내가 예민해지는 이유를 어느 정도 설명할 수 있다.",
+      "후회했던 행동이 어떤 상황에서 반복되는지 인식하고 있다.",
+      "말하거나 행동하기 전에 내 선택의 결과를 먼저 생각하는 편이다.",
+      "감정이 강하게 올라와도 단기 영향과 장기 영향을 구분해 보려고 한다.",
+      "내 결정이 나뿐 아니라 팀과 관계에 미칠 영향까지 고려한다.",
+      "감정이 격해져도 즉각 반응하지 않고 한 템포 멈출 수 있다.",
+      "긴장이나 압박을 느낄 때 그것을 준비와 집중의 에너지로 전환하려고 한다.",
+      "감정 때문에 판단이 흐려질 때 스스로 균형을 회복하는 방법이 있다.",
+      "외부 보상이 크지 않아도 일이 의미 있다고 느끼면 몰입할 수 있다.",
+      "나는 목표를 추진할 때 스스로 납득할 만한 이유를 찾는 편이다.",
+      "누가 시켜서보다 내가 중요하다고 느끼는 일에 더 지속적으로 힘을 낸다.",
+      "문제가 생기면 불가능한 이유보다 가능한 대안을 먼저 찾으려 한다.",
+      "실패나 실수를 겪어도 배울 점을 찾고 다시 시도하려는 편이다.",
+      "불확실한 상황에서도 내가 통제할 수 있는 부분에 집중한다.",
+      "상대의 말뿐 아니라 그 뒤에 있는 감정까지 이해하려고 노력한다.",
+      "누군가 부정적으로 반응할 때도 그 사람 입장에서 이유를 생각해본다.",
+      "피드백이나 조언을 할 때 상대의 감정 상태를 고려하는 편이다.",
+      "나는 일상의 업무를 개인적 가치나 더 큰 목적과 연결해 생각하려 한다.",
+      "중요한 선택에서는 ‘무엇이 유리한가’뿐 아니라 ‘무엇이 의미 있는가’도 본다.",
+      "단기 성과보다 장기적으로 옳고 가치 있는 방향을 중시하는 편이다."
+    ];
+    const CATEGORY_NAMES = ["감정식별력", "패턴인식", "결과예측", "감정조절·활용", "내적동기", "낙관성", "공감", "목적지향"];
 
-let cachedData = [];
-let filteredData = [];
+    let cachedData = [];
+    let filteredData = [];
 
-function getScoreClass(score) {
-  if (score >= 4) return "score-high";
-  if (score >= 3) return "score-mid";
-  return "score-low";
-}
+    function toNumber(value) {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : 0;
+    }
 
-function formatDate(value) {
-  if (!value) return "-";
-  if (value.seconds) {
-    return new Date(value.seconds * 1000).toLocaleString("ko-KR");
-  }
-  return String(value);
-}
+    function escapeHtml(value = "") {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
 
-function toDateObject(value) {
-  if (!value) return null;
-  if (value.seconds) return new Date(value.seconds * 1000);
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
+    function getAverageFromItems(items = []) {
+      if (!items.length) return 0;
+      const total = items.reduce((sum, item) => sum + toNumber(item.averageScore), 0);
+      return Number((total / items.length).toFixed(2));
+    }
 
-function formatDateKey(value) {
-  const date = toDateObject(value);
-  if (!date) return "";
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+    function getComparison(item, baselineAverage = getAverageFromItems(cachedData)) {
+      const myAverage = toNumber(item.averageScore);
+      const overallAverage = toNumber(baselineAverage);
+      const diff = Number((myAverage - overallAverage).toFixed(2));
+      return { myAverage, overallAverage, diff };
+    }
 
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+    function formatDate(value) {
+      if (!value) return "-";
+      if (value.seconds) return new Date(value.seconds * 1000).toLocaleString("ko-KR");
+      return String(value);
+    }
 
-function showAdminApp() {
-  document.getElementById("loginScreen").classList.add("hidden");
-  document.getElementById("adminApp").classList.remove("hidden");
-}
+    function formatDiff(value) {
+      const num = toNumber(value);
+      return `${num > 0 ? "+" : ""}${num.toFixed(2)}점`;
+    }
 
-function showLoginScreen() {
-  document.getElementById("adminApp").classList.add("hidden");
-  document.getElementById("loginScreen").classList.remove("hidden");
-}
+    function getDiffColor(value) {
+      if (value > 0) return "#16a34a";
+      if (value < 0) return "#dc2626";
+      return "#64748b";
+    }
 
-function checkLogin() {
-  const isLoggedIn = sessionStorage.getItem(LOGIN_STORAGE_KEY) === "true";
-  if (isLoggedIn) {
-    showAdminApp();
-    loadData();
-  } else {
-    showLoginScreen();
-  }
-}
+    function getScoreClass(score) {
+      if (score >= 4) return "score-high";
+      if (score >= 3) return "score-mid";
+      return "score-low";
+    }
 
-function renderStats(data) {
-  document.getElementById("totalCount").innerText = data.length;
+    function showAdminApp() {
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("adminApp").classList.remove("hidden");
+    }
 
-  if (!data.length) {
-    document.getElementById("averageScore").innerText = "-";
-    document.getElementById("highestScore").innerText = "-";
-    document.getElementById("filteredSummaryText").innerText = "현재 조회 결과가 없어 상세 리포트를 생성할 수 없습니다.";
-    return;
-  }
+    function showLoginScreen() {
+      document.getElementById("adminApp").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+    }
 
-  const avg = data.reduce((sum, item) => sum + (item.averageScore || 0), 0) / data.length;
-  const highest = Math.max(...data.map(item => item.averageScore || 0));
+    function checkLogin() {
+      const isLoggedIn = sessionStorage.getItem(LOGIN_STORAGE_KEY) === "true";
+      if (isLoggedIn) {
+        showAdminApp();
+        loadData();
+      } else {
+        showLoginScreen();
+      }
+    }
 
-  document.getElementById("averageScore").innerText = avg.toFixed(2);
-  document.getElementById("highestScore").innerText = highest.toFixed(2);
-  document.getElementById("filteredSummaryText").innerText = `현재 ${data.length}건 조회 결과 기준 리포트를 생성합니다.`;
-}
+    function renderStats(data) {
+      const filteredAverage = getAverageFromItems(data);
+      const overallAverage = getAverageFromItems(cachedData);
+      document.getElementById("totalCount").innerText = data.length;
 
-function buildExportRows(data) {
-  return data.map(item => {
-    const resultMap = Object.fromEntries((item.results || []).map(result => [result.category, result.score]));
+      if (!data.length) {
+        document.getElementById("averageScore").innerText = "-";
+        document.getElementById("averageScoreFoot").innerText = "현재 조회 결과가 없습니다.";
+        document.getElementById("highestScore").innerText = "-";
+        document.getElementById("filteredSummaryText").innerText = "현재 조회 결과가 없어 상세 리포트를 생성할 수 없습니다.";
+        return;
+      }
 
-    return {
-      이름: item.name || "",
-      이메일: item.email || "",
-      회사명: item.company || "",
-      직급: item.position || "",
-      부서: item.dept || "",
-      평균점수: Number(item.averageScore || 0).toFixed(2),
-      제출일: formatDate(item.createdAt),
-      감정식별력: resultMap["감정식별력"] ?? "",
-      패턴인식: resultMap["패턴인식"] ?? "",
-      결과예측: resultMap["결과예측"] ?? "",
-      "감정조절·활용": resultMap["감정조절·활용"] ?? "",
-      내적동기: resultMap["내적동기"] ?? "",
-      낙관성: resultMap["낙관성"] ?? "",
-      공감: resultMap["공감"] ?? "",
-      목적지향: resultMap["목적지향"] ?? ""
-    };
-  });
-}
+      const highest = Math.max(...data.map(item => toNumber(item.averageScore)));
+      document.getElementById("averageScore").innerText = filteredAverage.toFixed(2);
+      document.getElementById("averageScoreFoot").innerText = `현재 조회 결과 평균 / 전체 DB 평균 ${overallAverage.toFixed(2)}점`;
+      document.getElementById("highestScore").innerText = highest.toFixed(2);
+      document.getElementById("filteredSummaryText").innerText = `현재 ${data.length}건 조회 결과 기준 리포트를 생성합니다.`;
+    }
 
-function downloadXlsx() {
-  const scope = document.getElementById("downloadScope").value;
-  const exportData = scope === "all" ? cachedData : filteredData;
+    function buildExportRows(data) {
+      return data.map(item => {
+        const resultMap = Object.fromEntries((item.results || []).map(result => [result.category, result.score]));
+        return {
+          이름: item.name || "",
+          이메일: item.email || "",
+          회사명: item.company || "",
+          직급: item.position || "",
+          부서: item.dept || "",
+          평균점수: Number(item.averageScore || 0).toFixed(2),
+          제출일: formatDate(item.createdAt),
+          감정식별력: resultMap["감정식별력"] ?? "",
+          패턴인식: resultMap["패턴인식"] ?? "",
+          결과예측: resultMap["결과예측"] ?? "",
+          "감정조절·활용": resultMap["감정조절·활용"] ?? "",
+          내적동기: resultMap["내적동기"] ?? "",
+          낙관성: resultMap["낙관성"] ?? "",
+          공감: resultMap["공감"] ?? "",
+          목적지향: resultMap["목적지향"] ?? ""
+        };
+      });
+    }
 
-  if (!exportData.length) {
-    alert("저장할 데이터가 없습니다.");
-    return;
-  }
+    function downloadXlsx() {
+      const scope = document.getElementById("downloadScope").value;
+      const exportData = scope === "all" ? cachedData : filteredData;
+      if (!exportData.length) {
+        alert("저장할 데이터가 없습니다.");
+        return;
+      }
 
-  const rows = buildExportRows(exportData);
-  const worksheet = XLSX.utils.json_to_sheet(rows);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "응답목록");
+      const rows = buildExportRows(exportData);
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "응답목록");
 
-  const now = new Date();
-  const scopeLabel = scope === "all" ? "전체" : "조회결과";
-  const fileName = `kcg-${scopeLabel}-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}.xlsx`;
+      const now = new Date();
+      const scopeLabel = scope === "all" ? "전체" : "조회결과";
+      const fileName = `kcg-${scopeLabel}-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+    }
 
-  XLSX.writeFile(workbook, fileName);
-}
+    function buildAggregatedItem(items) {
+      if (!items.length) return null;
 
-function buildAggregatedItem(items) {
-  if (!items.length) return null;
+      const averageScore = items.reduce((sum, entry) => sum + toNumber(entry.averageScore), 0) / items.length;
+      const results = CATEGORY_NAMES.map((category, categoryIndex) => {
+        const categoryValues = items
+          .map(entry => toNumber((entry.results || []).find(result => result.category === category)?.score || 0))
+          .filter(value => value > 0);
+        const score = categoryValues.length
+          ? Number((categoryValues.reduce((sum, value) => sum + value, 0) / categoryValues.length).toFixed(2))
+          : 0;
 
-  const averageScore = items.reduce((sum, entry) => sum + Number(entry.averageScore || 0), 0) / items.length;
-  const results = CATEGORY_NAMES.map((category, categoryIndex) => {
-    const categoryValues = items
-      .map(entry => Number((entry.results || []).find(result => result.category === category)?.score || 0))
-      .filter(value => value > 0);
-    const score = categoryValues.length
-      ? Number((categoryValues.reduce((sum, value) => sum + value, 0) / categoryValues.length).toFixed(2))
-      : 0;
+        const baseIndex = categoryIndex * 3;
+        const detailAnswers = [0, 1, 2].map(offset => {
+          const values = items
+            .map(entry => toNumber(entry.answers?.[baseIndex + offset] ?? 0))
+            .filter(value => value > 0);
+          return values.length
+            ? Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2))
+            : 0;
+        });
 
-    const baseIndex = categoryIndex * 3;
-    const detailAnswers = [0, 1, 2].map(offset => {
-      const values = items
-        .map(entry => Number(entry.answers?.[baseIndex + offset] ?? 0))
-        .filter(value => value > 0);
-      return values.length
-        ? Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2))
-        : 0;
-    });
+        return { category, score, detailAnswers };
+      });
 
-    return { category, score, detailAnswers };
-  });
+      const answers = {};
+      results.forEach((result, categoryIndex) => {
+        const baseIndex = categoryIndex * 3;
+        result.detailAnswers.forEach((value, offset) => {
+          answers[baseIndex + offset] = value;
+        });
+      });
 
-  const answers = {};
-  results.forEach((result, categoryIndex) => {
-    const baseIndex = categoryIndex * 3;
-    result.detailAnswers.forEach((value, offset) => {
-      answers[baseIndex + offset] = value;
-    });
-  });
+      return {
+        id: "filtered-report",
+        name: `조회 결과 ${items.length}건`,
+        email: "현재 필터링된 응답 집계 결과",
+        company: "현재 조회 결과 전체",
+        position: "집계 리포트",
+        dept: "필터링 기준 반영",
+        createdAt: items[0]?.createdAt || null,
+        averageScore: Number(averageScore.toFixed(2)),
+        results,
+        answers
+      };
+    }
 
-  return {
-    id: "filtered-report",
-    name: `조회 결과 ${items.length}건`,
-    email: "현재 필터링된 응답 집계 결과",
-    company: "현재 조회 결과 전체",
-    position: "집계 리포트",
-    dept: "필터링 기준 반영",
-    createdAt: items[0]?.createdAt || null,
-    averageScore: Number(averageScore.toFixed(2)),
-    results,
-    answers
-  };
-}
+    function openDetailWindow(item) {
+      const popup = window.open("", "kcg-response-detail", "width=1180,height=1100,resizable=yes,scrollbars=yes");
+      if (!popup) {
+        alert("팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.");
+        return;
+      }
 
-function openDetailWindow(item) {
-  const popup = window.open("", "kcg-response-detail", "width=1180,height=1100,resizable=yes,scrollbars=yes");
+      const labels = (item.results || []).map(result => result.category);
+      const scores = (item.results || []).map(result => toNumber(result.score));
+      const allItems = cachedData;
+      const averageCategoryScores = CATEGORY_NAMES.map(category => {
+        const values = allItems
+          .map(entry => toNumber((entry.results || []).find(result => result.category === category)?.score || 0))
+          .filter(value => value > 0);
+        return values.length ? Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)) : 0;
+      });
 
-  if (!popup) {
-    alert("팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.");
-    return;
-  }
+      const overallAverage = getAverageFromItems(allItems);
+      const myAverage = toNumber(item.averageScore);
+      const overallDiff = Number((myAverage - overallAverage).toFixed(2));
 
-  const labels = (item.results || []).map(result => result.category);
-  const scores = (item.results || []).map(result => Number(result.score || 0));
-  const allItems = cachedData;
-  const averageCategoryScores = CATEGORY_NAMES.map(category => {
-    const values = allItems
-      .map(entry => Number((entry.results || []).find(result => result.category === category)?.score || 0))
-      .filter(value => value > 0);
-    if (!values.length) return 0;
-    return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2));
-  });
+      const categoryBlocks = CATEGORY_NAMES.map((category, categoryIndex) => {
+        const baseIndex = categoryIndex * 3;
+        const averageData = [0, 1, 2].map(offset => {
+          const values = allItems
+            .map(entry => toNumber(entry.answers?.[baseIndex + offset] ?? 0))
+            .filter(value => value > 0);
+          return values.length ? Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)) : 0;
+        });
 
-  const categoryBlocks = CATEGORY_NAMES.map((category, categoryIndex) => {
-    const baseIndex = categoryIndex * 3;
-    const averageData = [0, 1, 2].map(offset => {
-      const values = allItems
-        .map(entry => Number(entry.answers?.[baseIndex + offset] ?? 0))
-        .filter(value => value > 0);
-      if (!values.length) return 0;
-      return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2));
-    });
+        return {
+          category,
+          canvasId: `categoryRadar${categoryIndex}`,
+          labels: ["문항 1", "문항 2", "문항 3"],
+          data: [
+            toNumber(item.answers?.[baseIndex] ?? 0),
+            toNumber(item.answers?.[baseIndex + 1] ?? 0),
+            toNumber(item.answers?.[baseIndex + 2] ?? 0)
+          ],
+          averageData,
+          questions: [QUESTION_TEXTS[baseIndex], QUESTION_TEXTS[baseIndex + 1], QUESTION_TEXTS[baseIndex + 2]]
+        };
+      });
 
-    return {
-      category,
-      canvasId: `categoryRadar${categoryIndex}`,
-      labels: ["문항 1", "문항 2", "문항 3"],
-      data: [
-        Number(item.answers?.[baseIndex] ?? 0),
-        Number(item.answers?.[baseIndex + 1] ?? 0),
-        Number(item.answers?.[baseIndex + 2] ?? 0)
-      ],
-      averageData,
-      questions: [
-        QUESTION_TEXTS[baseIndex],
-        QUESTION_TEXTS[baseIndex + 1],
-        QUESTION_TEXTS[baseIndex + 2]
-      ]
-    };
-  });
+      const summaryCards = (item.results || []).map((result, index) => {
+        const myScore = toNumber(result.score);
+        const overallScore = toNumber(averageCategoryScores[index]);
+        const diff = Number((myScore - overallScore).toFixed(2));
 
-  const summaryCards = (item.results || []).map(result => {
-    const score = Number(result.score || 0);
-    return `
-      <div class="result-item">
-        <div class="result-row">
-          <div class="result-name">${escapeHtml(result.category)}</div>
-          <div class="result-score">${score.toFixed(2)}점</div>
+        return `
+          <div class="result-item">
+            <div class="result-row" style="margin-bottom:10px;display:flex;justify-content:space-between;gap:12px;">
+              <div class="result-name" style="font-weight:800;">${escapeHtml(result.category)}</div>
+              <div class="result-score" style="font-weight:800;">${myScore.toFixed(2)}점</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+              <div style="padding:10px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+                <div style="font-size:11px;color:#64748b;margin-bottom:4px;">전체평균</div>
+                <div style="font-weight:800;">${overallScore.toFixed(2)}점</div>
+              </div>
+              <div style="padding:10px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+                <div style="font-size:11px;color:#64748b;margin-bottom:4px;">내평균</div>
+                <div style="font-weight:800;">${myScore.toFixed(2)}점</div>
+              </div>
+              <div style="padding:10px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+                <div style="font-size:11px;color:#64748b;margin-bottom:4px;">편차</div>
+                <div style="font-weight:800;color:${getDiffColor(diff)};">${formatDiff(diff)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const categoryChartsHtml = categoryBlocks.map(block => `
+        <div class="mini-card" style="background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:18px;">
+          <div class="mini-title" style="font-size:18px;font-weight:900;margin-bottom:14px;">${escapeHtml(block.category)}</div>
+          <div class="mini-chart-wrap" style="height:260px;position:relative;"><canvas id="${block.canvasId}"></canvas></div>
+          <div class="mini-question-list" style="margin-top:16px;font-size:13px;line-height:1.8;color:#475569;">
+            <div>1. ${escapeHtml(block.questions[0] || "")}</div>
+            <div>2. ${escapeHtml(block.questions[1] || "")}</div>
+            <div>3. ${escapeHtml(block.questions[2] || "")}</div>
+          </div>
         </div>
-      </div>
-    `;
-  }).join("");
+      `).join("");
 
-  const categoryChartsHtml = categoryBlocks.map(block => `
-    <div class="mini-card">
-      <div class="mini-title">${escapeHtml(block.category)}</div>
-      <div class="mini-chart-wrap">
-        <canvas id="${block.canvasId}"></canvas>
-      </div>
-      <div class="mini-question-list">
-        <div>1. ${escapeHtml(block.questions[0] || "")}</div>
-        <div>2. ${escapeHtml(block.questions[1] || "")}</div>
-        <div>3. ${escapeHtml(block.questions[2] || "")}</div>
-      </div>
-    </div>
-  `).join("");
+      popup.document.write(`
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>응답 상세보기</title>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+          <style>
+            * { box-sizing:border-box; }
+            body { margin:0; padding:28px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#f8fafc; color:#0f172a; }
+            .wrap { max-width:1180px; margin:0 auto; }
+            .card { background:#fff; border:1px solid #e2e8f0; border-radius:24px; padding:24px; box-shadow:0 12px 30px rgba(15,23,42,.06); margin-bottom:20px; }
+            .hero-card { padding:0; overflow:hidden; }
+            .hero-band { height:18px; background:linear-gradient(90deg,#0f172a 0%,#1d4ed8 45%,#60a5fa 100%); }
+            .report-head { padding:28px 30px 0; display:flex; justify-content:space-between; gap:20px; align-items:flex-start; }
+            .report-kicker { font-size:12px; font-weight:800; letter-spacing:.16em; color:#1d4ed8; text-transform:uppercase; }
+            .report-title { margin:10px 0 0; font-size:34px; font-weight:900; letter-spacing:-.05em; }
+            .report-subtitle { margin-top:8px; font-size:14px; line-height:1.6; color:#64748b; }
+            .profile-layout { padding:26px 30px 30px; display:grid; grid-template-columns:minmax(0,1.6fr) minmax(260px,.9fr); gap:28px; align-items:end; }
+            .profile-label { font-size:12px; font-weight:800; letter-spacing:.14em; color:#94a3b8; text-transform:uppercase; margin-bottom:12px; }
+            .company { font-size:40px; line-height:1.08; font-weight:900; letter-spacing:-.06em; }
+            .name-line { margin-top:14px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap; }
+            .name { margin:0; font-size:28px; line-height:1.1; font-weight:800; letter-spacing:-.04em; }
+            .role-line { font-size:18px; line-height:1.4; font-weight:700; color:#475569; }
+            .summary-strip { margin-top:18px; padding-top:16px; border-top:1px solid #e2e8f0; display:flex; gap:20px; flex-wrap:wrap; color:#475569; font-size:14px; }
+            .summary-strip strong { color:#0f172a; font-weight:800; margin-right:8px; }
+            .info-panel { border:1px solid #e2e8f0; border-radius:18px; padding:18px 18px 16px; background:#f8fafc; }
+            .info-row { padding:12px 0; border-bottom:1px solid #e2e8f0; }
+            .info-row:last-child { border-bottom:none; padding-bottom:0; }
+            .info-row:first-child { padding-top:0; }
+            .info-label { font-size:11px; font-weight:800; letter-spacing:.12em; color:#94a3b8; text-transform:uppercase; margin-bottom:6px; }
+            .info-value { font-size:15px; line-height:1.6; font-weight:700; color:#0f172a; word-break:break-word; }
+            .section-title { margin:0 0 14px; font-size:24px; font-weight:900; letter-spacing:-.04em; }
+            .radar-wrap { height:420px; position:relative; }
+            .result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+            .mini-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+            .pdf-action-bar { margin-top:22px; display:flex; justify-content:center; }
+            .pdf-button { border:none; border-radius:999px; padding:14px 24px; background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 12px 24px rgba(29,78,216,.18); }
+            @media print {
+              body { background:#fff; padding:0; }
+              .card { box-shadow:none; }
+              .pdf-action-bar { display:none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="wrap">
+            <section class="card hero-card">
+              <div class="hero-band"></div>
+              <div class="report-head">
+                <div>
+                  <div class="report-kicker">KCG SELF DIAGNOSIS</div>
+                  <div class="report-title">응답 상세 리포트</div>
+                  <div class="report-subtitle">관리자 화면에서 선택한 응답자의 결과를 전체 평균과 비교해 보여드립니다.</div>
+                </div>
+                <div style="min-width:360px;">
+                  <div style="font-size:12px;color:#64748b;margin-bottom:8px;">점수 비교 요약</div>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+                    <div style="padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;text-align:center;">
+                      <div style="font-size:11px;color:#64748b;margin-bottom:6px;">전체평균</div>
+                      <div style="font-size:24px;font-weight:900;">${overallAverage.toFixed(2)}</div>
+                    </div>
+                    <div style="padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;text-align:center;">
+                      <div style="font-size:11px;color:#64748b;margin-bottom:6px;">내평균</div>
+                      <div style="font-size:24px;font-weight:900;">${myAverage.toFixed(2)}</div>
+                    </div>
+                    <div style="padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;text-align:center;">
+                      <div style="font-size:11px;color:#64748b;margin-bottom:6px;">편차</div>
+                      <div style="font-size:24px;font-weight:900;color:${getDiffColor(overallDiff)};">${formatDiff(overallDiff)}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="profile-layout">
+                <div>
+                  <div class="profile-label">Company</div>
+                  <div class="company">${escapeHtml(item.company || "회사명 없음")}</div>
+                  <div class="name-line">
+                    <h2 class="name">${escapeHtml(item.name || "이름 없음")}</h2>
+                    <div class="role-line">${escapeHtml(item.position || "직급 없음")} · ${escapeHtml(item.dept || "부서 없음")}</div>
+                  </div>
+                  <div class="summary-strip">
+                    <div><strong>이메일</strong>${escapeHtml(item.email || "-")}</div>
+                    <div><strong>제출일</strong>${escapeHtml(formatDate(item.createdAt))}</div>
+                  </div>
+                </div>
+                <div class="info-panel">
+                  <div class="info-row"><div class="info-label">회사명</div><div class="info-value">${escapeHtml(item.company || "-")}</div></div>
+                  <div class="info-row"><div class="info-label">직급</div><div class="info-value">${escapeHtml(item.position || "-")}</div></div>
+                  <div class="info-row"><div class="info-label">부서</div><div class="info-value">${escapeHtml(item.dept || "-")}</div></div>
+                  <div class="info-row"><div class="info-label">이메일</div><div class="info-value">${escapeHtml(item.email || "-")}</div></div>
+                </div>
+              </div>
+            </section>
 
-  popup.document.write(`
-    <!DOCTYPE html>
-    <html lang="ko">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>응답 상세보기</title>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
-      <style>
-        * { box-sizing: border-box; }
-        body {
-          margin: 0;
-          padding: 28px;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          background: #f8fafc;
-          color: #0f172a;
-        }
-        .wrap {
-          max-width: 1180px;
-          margin: 0 auto;
-        }
-        .card {
-          background: white;
-          border: 1px solid #e2e8f0;
-          border-radius: 24px;
-          padding: 24px;
-          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-          margin-bottom: 20px;
-        }
-        .hero-card {
-          position: relative;
-          background: #ffffff;
-          border: 1px solid #d9e2ec;
-          border-radius: 28px;
-          padding: 0;
-          overflow: hidden;
-        }
-        .hero-band {
-          height: 18px;
-          background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 45%, #60a5fa 100%);
-        }
-        .report-head {
-          padding: 28px 30px 0;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 20px;
-        }
-        .report-kicker {
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 0.16em;
-          color: #1d4ed8;
-          text-transform: uppercase;
-        }
-        .report-title {
-          margin: 10px 0 0;
-          font-size: 34px;
-          font-weight: 900;
-          letter-spacing: -0.05em;
-          color: #0f172a;
-        }
-        .report-subtitle {
-          margin-top: 8px;
-          font-size: 14px;
-          line-height: 1.6;
-          color: #64748b;
-        }
-        .report-score {
-          min-width: 170px;
-          padding-left: 18px;
-          border-left: 1px solid #e2e8f0;
-          text-align: right;
-        }
-        .report-score-label {
-          font-size: 12px;
-          color: #64748b;
-          margin-bottom: 8px;
-        }
-        .report-score-value {
-          font-size: 42px;
-          line-height: 1;
-          font-weight: 900;
-          letter-spacing: -0.05em;
-          color: #111827;
-        }
-        .report-score-unit {
-          font-size: 16px;
-          font-weight: 700;
-          color: #475569;
-          margin-left: 4px;
-        }
-        .profile-layout {
-          padding: 26px 30px 30px;
-          display: grid;
-          grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.9fr);
-          gap: 28px;
-          align-items: end;
-        }
-        .profile-label {
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 0.14em;
-          color: #94a3b8;
-          text-transform: uppercase;
-          margin-bottom: 12px;
-        }
-        .company {
-          font-size: 40px;
-          line-height: 1.08;
-          font-weight: 900;
-          letter-spacing: -0.06em;
-          color: #0f172a;
-        }
-        .name-line {
-          margin-top: 14px;
-          display: flex;
-          align-items: flex-end;
-          gap: 14px;
-          flex-wrap: wrap;
-        }
-        .name {
-          margin: 0;
-          font-size: 28px;
-          line-height: 1.1;
-          font-weight: 800;
-          letter-spacing: -0.04em;
-          color: #1e293b;
-        }
-        .role-line {
-          font-size: 18px;
-          line-height: 1.4;
-          font-weight: 700;
-          color: #475569;
-        }
-        .summary-strip {
-          margin-top: 18px;
-          padding-top: 16px;
-          border-top: 1px solid #e2e8f0;
-          display: flex;
-          gap: 20px;
-          flex-wrap: wrap;
-          color: #475569;
-          font-size: 14px;
-        }
-        .summary-strip strong {
-          color: #0f172a;
-          font-weight: 800;
-          margin-right: 8px;
-        }
-        .info-panel {
-          border: 1px solid #e2e8f0;
-          border-radius: 18px;
-          padding: 18px 18px 16px;
-          background: #f8fafc;
-        }
-        .info-row {
-          padding: 12px 0;
-          border-bottom: 1px solid #e2e8f0;
-        }
-        .info-row:last-child {
-          border-bottom: none;
-          padding-bottom: 0;
-        }
-        .info-row:first-child {
-          padding-top: 0;
-        }
-        .info-label {
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          color: #94a3b8;
-          text-transform: uppercase;
-          margin-bottom: 6px;
-        }
-        .info-value {
-          font-size: 15px;
-          line-height: 1.6;
-          font-weight: 700;
-          color: #0f172a;
-          word-break: break-word;
-        }
-        .pdf-page {
-          margin-bottom: 22px;
-        }
-        .pdf-page-break {
-          break-before: page;
-          page-break-before: always;
-        }
-        .pdf-action-bar {
-          margin-top: 22px;
-          display: flex;
-          justify-content: center;
-        }
-        .pdf-button {
-          border: none;
-          border-radius: 999px;
-          padding: 14px 24px;
-          background: linear-gradient(135deg, #0f172a, #1d4ed8);
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 800;
-          letter-spacing: -0.01em;
-          cursor: pointer;
-          box-shadow: 0 12px 24px rgba(29, 78, 216, 0.18);
-        }
-        .pdf-button:hover {
-          transform: translateY(-1px);
-        }
-        @page {
-          size: A4 portrait;
-          margin: 12mm;
-        }
-        @media print {
-          body {
-            background: #ffffff;
-            padding: 0;
-          }
-          .wrap {
-            max-width: none;
-          }
-          .card {
-            box-shadow: none;
-            break-inside: avoid;
-            page-break-inside: avoid;
-            margin-bottom: 12px;
-          }
-          .hero-card {
-            border-color: #cbd5e1;
-          }
-          .chart-wrap {
-            height: 340px;
-          }
-          .mini-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-          }
-          .mini-card {
-            break-inside: avoid;
-            page-break-inside: avoid;
-            padding: 12px;
-          }
-          .mini-chart-wrap {
-            height: 180px;
-          }
-          .mini-question-list {
-            font-size: 10px;
-            line-height: 1.5;
-          }
-          .pdf-action-bar {
-            display: none !important;
-          }
-          .pdf-page {
-            min-height: auto;
-            margin-bottom: 0;
-          }
-          .pdf-page-break {
-            break-before: page;
-            page-break-before: always;
-          }
-        }
-        .section-title {
-          margin: 0 0 14px;
-          font-size: 18px;
-          font-weight: 800;
-        }
-        .chart-wrap {
-          height: 520px;
-        }
-        .result-list {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 12px;
-          margin-top: 18px;
-        }
-        .result-item {
-          border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 14px;
-          background: white;
-        }
-        .result-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 12px;
-        }
-        .result-name {
-          font-size: 14px;
-          font-weight: 700;
-        }
-        .result-score {
-          font-size: 14px;
-          font-weight: 800;
-          color: #2563eb;
-        }
-        .mini-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 16px;
-        }
-        .mini-card {
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 16px;
-          background: #fff;
-        }
-        .mini-title {
-          font-size: 16px;
-          font-weight: 800;
-          margin-bottom: 10px;
-        }
-        .mini-chart-wrap {
-          height: 280px;
-        }
-        .mini-question-list {
-          margin-top: 12px;
-          font-size: 12px;
-          line-height: 1.7;
-          color: #475569;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="wrap">
-        <section class="pdf-page">
-          <div class="card hero-card">
-            <div class="hero-band"></div>
-            <div class="report-head">
-              <div>
-                <div class="report-kicker">KCG COMPETENCY REPORT</div>
-                <div class="report-title">응답 상세 결과 리포트</div>
-                <div class="report-subtitle">개인 응답 프로필과 카테고리별 진단 결과를 정리한 PDF 보고서용 화면입니다.</div>
-              </div>
-              <div class="report-score">
-                <div class="report-score-label">전체 평균 점수</div>
-                <div><span class="report-score-value">${Number(item.averageScore || 0).toFixed(2)}</span><span class="report-score-unit">점</span></div>
-              </div>
-            </div>
-            <div class="profile-layout">
-              <div>
-                <div class="profile-label">Company</div>
-                <div class="company">${escapeHtml(item.company || "회사명 없음")}</div>
-                <div class="name-line">
-                  <h1 class="name">${escapeHtml(item.name || "이름 없음")}</h1>
-                  <div class="role-line">${escapeHtml(item.position || "직급 없음")} · ${escapeHtml(item.dept || "부서 없음")}</div>
-                </div>
-                <div class="summary-strip">
-                  <div><strong>제출일</strong>${escapeHtml(formatDate(item.createdAt))}</div>
-                  <div><strong>이메일</strong>${escapeHtml(item.email || "-")}</div>
-                </div>
-              </div>
-              <div class="info-panel">
-                <div class="info-row">
-                  <div class="info-label">응답자명</div>
-                  <div class="info-value">${escapeHtml(item.name || "-")}</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">소속 정보</div>
-                  <div class="info-value">${escapeHtml(item.company || "-")} / ${escapeHtml(item.dept || "-")}</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">직급</div>
-                  <div class="info-value">${escapeHtml(item.position || "-")}</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">연락처 정보</div>
-                  <div class="info-value">${escapeHtml(item.email || "-")}</div>
-                </div>
-              </div>
+            <section class="card">
+              <h3 class="section-title">종합 레이더 차트</h3>
+              <div class="radar-wrap"><canvas id="resultRadarChart"></canvas></div>
+            </section>
+
+            <section class="card">
+              <h3 class="section-title">카테고리별 점수 비교</h3>
+              <div class="result-grid">${summaryCards}</div>
+            </section>
+
+            <section class="card">
+              <h3 class="section-title">카테고리별 문항 비교</h3>
+              <div class="mini-grid">${categoryChartsHtml}</div>
+            </section>
+
+            <div class="pdf-action-bar">
+              <button class="pdf-button" id="printPdfButton">PDF로 저장하기</button>
             </div>
           </div>
 
-          <div class="card">
-            <div class="section-title">카테고리별 결과 그래프</div>
-            <div class="chart-wrap">
-              <canvas id="resultRadarChart"></canvas>
-            </div>
-            <div class="result-list">${summaryCards || '<div>결과 데이터 없음</div>'}</div>
-          </div>
-        </section>
-
-        <section class="pdf-page pdf-page-break">
-          <div class="card">
-            <div class="section-title">카테고리별 3문항 레이더 차트 </div>
-            <div class="mini-grid">
-              ${categoryBlocks.slice(0, 6).map(block => `
-                <div class="mini-card">
-                  <div class="mini-title">${escapeHtml(block.category)}</div>
-                  <div class="mini-chart-wrap">
-                    <canvas id="${block.canvasId}"></canvas>
-                  </div>
-                  <div class="mini-question-list">
-                    <div>1. ${escapeHtml(block.questions[0] || "")}</div>
-                    <div>2. ${escapeHtml(block.questions[1] || "")}</div>
-                    <div>3. ${escapeHtml(block.questions[2] || "")}</div>
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        </section>
-
-        <section class="pdf-page pdf-page-break">
-          <div class="card">
-            <div class="section-title">카테고리별 3문항 레이더 차트 </div>
-            <div class="mini-grid">
-              ${categoryBlocks.slice(6).map(block => `
-                <div class="mini-card">
-                  <div class="mini-title">${escapeHtml(block.category)}</div>
-                  <div class="mini-chart-wrap">
-                    <canvas id="${block.canvasId}"></canvas>
-                  </div>
-                  <div class="mini-question-list">
-                    <div>1. ${escapeHtml(block.questions[0] || "")}</div>
-                    <div>2. ${escapeHtml(block.questions[1] || "")}</div>
-                    <div>3. ${escapeHtml(block.questions[2] || "")}</div>
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        </section>
-
-        <div class="pdf-action-bar">
-          <button class="pdf-button" id="printPdfButton">PDF로 저장하기</button>
-        </div>
-      </div>
-
-      <script>
-        const createRadar = (canvasId, labels, personalData, averageData, personalLabel, averageLabel, color) => {
-          const ctx = document.getElementById(canvasId);
-          if (!ctx || typeof Chart === 'undefined') return;
-          new Chart(ctx, {
-            type: 'radar',
-            data: {
-              labels,
-              datasets: [{
-                label: personalLabel,
-                data: personalData,
-                borderColor: color,
-                backgroundColor: color.replace('1)', '0.16)'),
-                pointBackgroundColor: color,
-                pointBorderColor: '#fff',
-                borderWidth: 2
-              }, {
-                label: averageLabel,
-                data: averageData,
-                borderColor: 'rgba(15, 23, 42, 0.9)',
-                backgroundColor: 'rgba(15, 23, 42, 0.05)',
-                pointBackgroundColor: 'rgba(15, 23, 42, 0.9)',
-                pointBorderColor: '#fff',
-                borderWidth: 2,
-                borderDash: [6, 4]
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: true,
-                  position: 'top',
-                  labels: {
-                    boxWidth: 14,
-                    color: '#334155',
-                    font: {
-                      size: 11,
-                      weight: '700'
+          <script>
+            const createRadar = (canvasId, labels, personalData, averageData, personalLabel, averageLabel, color) => {
+              const ctx = document.getElementById(canvasId);
+              if (!ctx || typeof Chart === 'undefined') return;
+              new Chart(ctx, {
+                type:'radar',
+                data:{
+                  labels,
+                  datasets:[
+                    {
+                      label:personalLabel,
+                      data:personalData,
+                      borderColor:color,
+                      backgroundColor:color.replace('1)', '0.16)'),
+                      pointBackgroundColor:color,
+                      pointBorderColor:'#fff',
+                      borderWidth:2
+                    },
+                    {
+                      label:averageLabel,
+                      data:averageData,
+                      borderColor:'rgba(15, 23, 42, 0.9)',
+                      backgroundColor:'rgba(15, 23, 42, 0.05)',
+                      pointBackgroundColor:'rgba(15, 23, 42, 0.9)',
+                      pointBorderColor:'#fff',
+                      borderWidth:2,
+                      borderDash:[6,4]
+                    }
+                  ]
+                },
+                options:{
+                  responsive:true,
+                  maintainAspectRatio:false,
+                  plugins:{
+                    legend:{ display:true, position:'top' }
+                  },
+                  scales:{
+                    r:{
+                      min:0,
+                      max:5,
+                      ticks:{ stepSize:1, backdropColor:'transparent' },
+                      pointLabels:{ color:'#334155' },
+                      grid:{ color:'#cbd5e1' },
+                      angleLines:{ color:'#cbd5e1' }
                     }
                   }
                 }
-              },
-              scales: {
-                r: {
-                  min: 0,
-                  max: 5,
-                  ticks: {
-                    stepSize: 1,
-                    backdropColor: 'transparent'
-                  },
-                  pointLabels: {
-                    font: {
-                      size: 12
-                    },
-                    color: '#334155'
-                  },
-                  grid: {
-                    color: '#cbd5e1'
-                  },
-                  angleLines: {
-                    color: '#cbd5e1'
-                  }
-                }
-              }
-            }
-          });
-        };
+              });
+            };
 
-        createRadar(
-          'resultRadarChart',
-          ${JSON.stringify(labels)},
-          ${JSON.stringify(scores)},
-          ${JSON.stringify(averageCategoryScores)},
-          '개인',
-          '전체평균',
-          'rgba(225, 29, 72, 1)'
-        );
+            createRadar(
+              'resultRadarChart',
+              ${JSON.stringify(labels)},
+              ${JSON.stringify(scores)},
+              ${JSON.stringify(averageCategoryScores)},
+              '개인',
+              '전체평균',
+              'rgba(225, 29, 72, 1)'
+            );
 
-        ${categoryBlocks.map((block, idx) => `createRadar('${block.canvasId}', ${JSON.stringify(block.labels)}, ${JSON.stringify(block.data)}, ${JSON.stringify(block.averageData)}, '개인', '전체평균', 'rgba(${40 + idx * 18}, ${99 + (idx * 9 % 100)}, ${235 - (idx * 11 % 120)}, 1)');`).join('\n')}
+            ${categoryBlocks.map((block, idx) => `createRadar('${block.canvasId}', ${JSON.stringify(block.labels)}, ${JSON.stringify(block.data)}, ${JSON.stringify(block.averageData)}, '개인', '전체평균', 'rgba(${40 + idx * 18}, ${99 + (idx * 9 % 100)}, ${235 - (idx * 11 % 120)}, 1)');`).join("\n")}
 
-        document.getElementById('printPdfButton')?.addEventListener('click', () => {
-          window.print();
-        });
-      <\/script>
-    </body>
-    </html>
-  `);
+            document.getElementById('printPdfButton')?.addEventListener('click', () => window.print());
+          <\/script>
+        </body>
+        </html>
+      `);
 
-  popup.document.close();
-  popup.focus();
-}
+      popup.document.close();
+      popup.focus();
+    }
 
-function renderTable(data) {
-  const tbody = document.getElementById("tableBody");
-  document.getElementById("resultCountText").innerText = `${data.length}건 표시`;
+    function renderTable(data) {
+      const tbody = document.getElementById("tableBody");
+      const overallAverage = getAverageFromItems(cachedData);
+      document.getElementById("resultCountText").innerText = `${data.length}건 표시`;
 
-  if (!data.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="empty">조건에 맞는 응답 데이터가 없습니다.</td>
-      </tr>
-    `;
-    return;
-  }
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">조건에 맞는 응답 데이터가 없습니다.</td></tr>';
+        return;
+      }
 
-  tbody.innerHTML = data.map(item => {
-    const avg = Number(item.averageScore || 0);
-    const scoreClass = getScoreClass(avg);
+      tbody.innerHTML = data.map(item => {
+        const { myAverage, diff } = getComparison(item, overallAverage);
+        const scoreClass = getScoreClass(myAverage);
 
-    return `
-      <tr>
-        <td>
-          <div class="name-cell">
-            <div class="name-main">${escapeHtml(item.name || "이름 없음")}</div>
-            <div class="name-sub">${escapeHtml(item.email || "이메일 없음")}</div>
-          </div>
-        </td>
-        <td>${escapeHtml(item.company || "회사명 없음")}</td>
-        <td>${escapeHtml(item.position || "직급 없음")}</td>
-        <td>${escapeHtml(item.dept || "부서 없음")}</td>
-        <td>${escapeHtml(formatDate(item.createdAt))}</td>
-        <td><span class="score-chip ${scoreClass}">${avg.toFixed(2)}점</span></td>
-        <td>
-          <div class="row-actions">
-            <button class="primary" data-action="view" data-id="${item.id}">상세보기</button>
-            <button class="danger" data-action="delete" data-id="${item.id}">삭제</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join("");
-}
+        return `
+          <tr>
+            <td>
+              <div class="name-cell">
+                <div class="name-main">${escapeHtml(item.name || "이름 없음")}</div>
+                <div class="name-sub">${escapeHtml(item.email || "이메일 없음")}</div>
+              </div>
+            </td>
+            <td>${escapeHtml(item.company || "회사명 없음")}</td>
+            <td>${escapeHtml(item.position || "직급 없음")}</td>
+            <td>${escapeHtml(item.dept || "부서 없음")}</td>
+            <td>${escapeHtml(formatDate(item.createdAt))}</td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <span class="score-chip ${scoreClass}">${myAverage.toFixed(2)}점</span>
+                <div style="font-size:12px;color:#64748b;">전체 ${overallAverage.toFixed(2)}점</div>
+                <div style="font-size:12px;font-weight:800;color:${getDiffColor(diff)};">편차 ${formatDiff(diff)}</div>
+              </div>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button class="primary" data-action="view" data-id="${item.id}">상세보기</button>
+                <button class="danger" data-action="delete" data-id="${item.id}">삭제</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
 
-function applyFilters() {
-  const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
-  const companyFilter = document.getElementById("companyFilter").value.trim().toLowerCase();
-  const positionFilter = document.getElementById("positionFilter").value.trim().toLowerCase();
-  const deptFilter = document.getElementById("deptFilter").value.trim().toLowerCase();
-  const scoreFilter = document.getElementById("scoreFilter").value;
+    function applyFilters() {
+      const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
+      const companyFilter = document.getElementById("companyFilter").value.trim().toLowerCase();
+      const positionFilter = document.getElementById("positionFilter").value.trim().toLowerCase();
+      const deptFilter = document.getElementById("deptFilter").value.trim().toLowerCase();
+      const scoreFilter = document.getElementById("scoreFilter").value;
 
-  filteredData = cachedData.filter(item => {
-    const searchTarget = [item.name, item.email]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+      filteredData = cachedData.filter(item => {
+        const searchTarget = [item.name, item.email].filter(Boolean).join(" ").toLowerCase();
+        const company = String(item.company || "").toLowerCase();
+        const position = String(item.position || "").toLowerCase();
+        const dept = String(item.dept || "").toLowerCase();
+        const score = toNumber(item.averageScore);
 
-    const company = String(item.company || "").toLowerCase();
-    const position = String(item.position || "").toLowerCase();
-    const dept = String(item.dept || "").toLowerCase();
-    const score = Number(item.averageScore || 0);
+        const matchKeyword = !keyword || searchTarget.includes(keyword);
+        const matchCompany = !companyFilter || company.includes(companyFilter);
+        const matchPosition = !positionFilter || position.includes(positionFilter);
+        const matchDept = !deptFilter || dept.includes(deptFilter);
 
-    const matchKeyword = !keyword || searchTarget.includes(keyword);
-    const matchCompany = !companyFilter || company.includes(companyFilter);
-    const matchPosition = !positionFilter || position.includes(positionFilter);
-    const matchDept = !deptFilter || dept.includes(deptFilter);
+        let matchScore = true;
+        if (scoreFilter === "high") matchScore = score >= 4;
+        if (scoreFilter === "mid") matchScore = score >= 3 && score < 4;
+        if (scoreFilter === "low") matchScore = score < 3;
 
-    let matchScore = true;
-    if (scoreFilter === "high") matchScore = score >= 4;
-    if (scoreFilter === "mid") matchScore = score >= 3 && score < 4;
-    if (scoreFilter === "low") matchScore = score < 3;
+        return matchKeyword && matchCompany && matchPosition && matchDept && matchScore;
+      });
 
-    return matchKeyword && matchCompany && matchPosition && matchDept && matchScore;
-  });
+      renderStats(filteredData);
+      renderTable(filteredData);
+    }
 
-  renderStats(filteredData);
-  renderTable(filteredData);
-}
+    async function deleteItem(id) {
+      const ok = confirm("이 응답 데이터를 삭제하시겠습니까?");
+      if (!ok) return;
+      try {
+        await deleteDoc(doc(db, "surveyResponses", id));
+        await loadData();
+      } catch (error) {
+        console.error("삭제 실패:", error);
+        alert("삭제 중 오류가 발생했습니다. Firestore 권한을 확인해주세요.");
+      }
+    }
 
-async function deleteItem(id) {
-  const ok = confirm("이 응답 데이터를 삭제하시겠습니까?");
-  if (!ok) return;
+    async function loadData() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = '<tr><td colspan="7" class="empty">데이터를 불러오는 중...</td></tr>';
 
-  try {
-    await deleteDoc(doc(db, "surveyResponses", id));
-    await loadData();
-  } catch (error) {
-    console.error("삭제 실패:", error);
-    alert("삭제 중 오류가 발생했습니다. Firestore 권한을 확인해주세요.");
-  }
-}
+      try {
+        const q = query(collection(db, "surveyResponses"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        cachedData = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+        applyFilters();
+      } catch (error) {
+        console.error("조회 실패:", error);
+        document.getElementById("totalCount").innerText = "-";
+        document.getElementById("averageScore").innerText = "-";
+        document.getElementById("highestScore").innerText = "-";
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">데이터를 불러오지 못했습니다. Firestore 설정이나 권한을 확인해주세요.</td></tr>';
+      }
+    }
 
-async function loadData() {
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = `
-    <tr>
-      <td colspan="7" class="empty">데이터를 불러오는 중...</td>
-    </tr>
-  `;
+    document.getElementById("loginForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = document.getElementById("adminId").value.trim();
+      const password = document.getElementById("adminPassword").value.trim();
+      const errorBox = document.getElementById("loginError");
 
-  try {
-    const q = query(collection(db, "surveyResponses"), orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
+      if (id === adminAuthConfig.username && password === adminAuthConfig.password) {
+        sessionStorage.setItem(LOGIN_STORAGE_KEY, "true");
+        errorBox.innerText = "";
+        showAdminApp();
+        loadData();
+        return;
+      }
 
-    cachedData = snapshot.docs.map(docSnap => ({
-      id: docSnap.id,
-      ...docSnap.data()
-    }));
+      errorBox.innerText = "아이디 또는 비밀번호가 올바르지 않습니다.";
+    });
 
-    applyFilters();
-  } catch (error) {
-    console.error("조회 실패:", error);
-    document.getElementById("totalCount").innerText = "-";
-    document.getElementById("averageScore").innerText = "-";
-    document.getElementById("highestScore").innerText = "-";
-    document.getElementById("latestDate").innerText = "-";
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="empty">데이터를 불러오지 못했습니다. Firestore 설정이나 권한을 확인해주세요.</td>
-      </tr>
-    `;
-  }
-}
+    document.getElementById("logoutButton").addEventListener("click", () => {
+      sessionStorage.removeItem(LOGIN_STORAGE_KEY);
+      cachedData = [];
+      filteredData = [];
+      document.getElementById("adminPassword").value = "";
+      showLoginScreen();
+    });
 
-document.getElementById("loginForm").addEventListener("submit", (event) => {
-  event.preventDefault();
+    document.getElementById("refreshButton").addEventListener("click", loadData);
+    document.getElementById("downloadXlsxButton").addEventListener("click", downloadXlsx);
+    document.getElementById("openFilteredReportButton").addEventListener("click", () => {
+      if (!filteredData.length) {
+        alert("현재 조회된 데이터가 없어 상세 리포트를 생성할 수 없습니다.");
+        return;
+      }
+      const aggregatedItem = buildAggregatedItem(filteredData);
+      if (!aggregatedItem) {
+        alert("집계 리포트 생성에 실패했습니다.");
+        return;
+      }
+      openDetailWindow(aggregatedItem);
+    });
 
-  const id = document.getElementById("adminId").value.trim();
-  const password = document.getElementById("adminPassword").value.trim();
-  const errorBox = document.getElementById("loginError");
+    document.getElementById("searchInput").addEventListener("input", applyFilters);
+    document.getElementById("companyFilter").addEventListener("input", applyFilters);
+    document.getElementById("positionFilter").addEventListener("input", applyFilters);
+    document.getElementById("deptFilter").addEventListener("input", applyFilters);
+    document.getElementById("scoreFilter").addEventListener("change", applyFilters);
 
-  if (id === adminAuthConfig.username && password === adminAuthConfig.password) {
-    sessionStorage.setItem(LOGIN_STORAGE_KEY, "true");
-    errorBox.innerText = "";
-    showAdminApp();
-    loadData();
-    return;
-  }
+    document.getElementById("tableBody").addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const { action, id } = button.dataset;
+      const item = cachedData.find(entry => entry.id === id);
 
-  errorBox.innerText = "아이디 또는 비밀번호가 올바르지 않습니다.";
-});
+      if (action === "view") {
+        if (item) openDetailWindow(item);
+        return;
+      }
 
-document.getElementById("logoutButton").addEventListener("click", () => {
-  sessionStorage.removeItem(LOGIN_STORAGE_KEY);
-  cachedData = [];
-  filteredData = [];
-  document.getElementById("adminPassword").value = "";
-  showLoginScreen();
-});
+      if (action === "delete") {
+        await deleteItem(id);
+      }
+    });
 
-document.getElementById("refreshButton").addEventListener("click", loadData);
-document.getElementById("downloadXlsxButton").addEventListener("click", downloadXlsx);
-document.getElementById("openFilteredReportButton").addEventListener("click", () => {
-  if (!filteredData.length) {
-    alert("현재 조회된 데이터가 없어 상세 리포트를 생성할 수 없습니다.");
-    return;
-  }
-
-  const aggregatedItem = buildAggregatedItem(filteredData);
-  if (!aggregatedItem) {
-    alert("집계 리포트 생성에 실패했습니다.");
-    return;
-  }
-
-  openDetailWindow(aggregatedItem);
-});
-document.getElementById("searchInput").addEventListener("input", applyFilters);
-document.getElementById("companyFilter").addEventListener("input", applyFilters);
-document.getElementById("positionFilter").addEventListener("input", applyFilters);
-document.getElementById("deptFilter").addEventListener("input", applyFilters);
-document.getElementById("scoreFilter").addEventListener("change", applyFilters);
-
-document.getElementById("tableBody").addEventListener("click", async (event) => {
-  const button = event.target.closest("button[data-action]");
-  if (!button) return;
-
-  const { action, id } = button.dataset;
-  const item = cachedData.find(entry => entry.id === id);
-
-  if (action === "view") {
-    if (item) openDetailWindow(item);
-    return;
-  }
-
-  if (action === "delete") {
-    await deleteItem(id);
-  }
-});
-
-checkLogin();
-</script>
+    checkLogin();
+  </script>
 </body>
 </html>
