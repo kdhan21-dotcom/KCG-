@@ -61,11 +61,30 @@
     display:block; margin-bottom:8px;
     font-size:13px; font-weight:700; color:#334155;
   }
-  .field input, .search-row input, .search-row select, .filter-row input, .action-row select {
-    width:100%; height:46px; padding:0 14px;
-    border:1px solid var(--line); border-radius:14px;
-    background:white; color:var(--text); outline:none;
-  }
+ .field input {
+  width:100%;
+  height:46px;
+  padding:0 14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:white;
+  color:var(--text);
+  outline:none;
+}
+
+.search-row input,
+.search-row select,
+.filter-row input,
+.action-row select {
+  height:56px;
+  padding:0 18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:white;
+  color:var(--text);
+  outline:none;
+  font-size:18px;
+}
   .field input:focus, .search-row input:focus, .search-row select:focus, .filter-row input:focus, .action-row select:focus {
     border-color:#93c5fd; box-shadow:0 0 0 4px rgba(37,99,235,.12);
   }
@@ -123,8 +142,27 @@
   .panel-title { margin:0; font-size:19px; font-weight:800; letter-spacing:-.02em; }
   .panel-subtitle { margin:6px 0 0; color:var(--muted); font-size:13px; }
   .toolbar { padding:18px 24px 20px; display:grid; gap:12px; }
-  .search-row,.filter-row,.action-row { display:flex; gap:12px; align-items:center; }
-  .search-row input,.filter-row input { flex:1; }
+  .search-row input {
+  flex:1 1 auto;
+  min-width:320px;
+  width:auto;
+}
+
+.search-row select {
+  flex:0 0 280px;
+  width:280px;
+}
+
+.filter-row input {
+  flex:1 1 0;
+  min-width:0;
+  width:auto;
+}
+
+.action-row select {
+  flex:0 0 240px;
+  width:240px;
+}
   .result-meta { color:var(--muted); font-size:13px; margin-left:auto; }
   .table-wrap { padding:0 24px 24px; }
   table {
@@ -619,14 +657,19 @@
             .mini-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
             .pdf-action-bar { margin-top:22px; display:flex; justify-content:center; }
             .pdf-button { border:none; border-radius:999px; padding:14px 24px; background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 12px 24px rgba(29,78,216,.18); }
-            @page {
-  size: A4 portrait;
-  margin: 10mm;
+          
+            .pdf-page {
+  margin-bottom: 22px;
+}
+
+.pdf-page-break {
+  break-before: page;
+  page-break-before: always;
 }
 
 @page {
   size: A4 portrait;
-  margin: 10mm;
+  margin: 12mm;
 }
 
 @media print {
@@ -651,11 +694,21 @@
     padding: 0 !important;
   }
 
+  .pdf-page {
+    min-height: auto !important;
+    margin-bottom: 0 !important;
+  }
+
+  .pdf-page-break {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
   .card {
     box-shadow: none !important;
     border: 1px solid #dbe2ea !important;
     border-radius: 14px !important;
-    margin-bottom: 10mm !important;
+    margin-bottom: 12px !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
@@ -719,12 +772,10 @@
   .section-title {
     font-size: 16pt !important;
     margin-bottom: 10px !important;
-    break-after: avoid !important;
-    page-break-after: avoid !important;
   }
 
   .radar-wrap {
-    height: 250px !important;
+    height: 240px !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
@@ -732,28 +783,28 @@
   .result-grid {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
   }
 
   .mini-grid {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
-    break-before: auto !important;
-    page-break-before: auto !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
   }
 
   .mini-card,
   .result-item,
-  .info-panel {
+  .info-panel,
+  .radar-wrap {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
   .mini-chart-wrap {
-    height: 210px !important;
+    height: 190px !important;
+  }
+
+  .mini-question-list {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
   }
 
   canvas {
@@ -817,24 +868,30 @@
               </div>
             </section>
 
-            <section class="card">
-              <h3 class="section-title">종합 레이더 차트</h3>
-              <div class="radar-wrap"><canvas id="resultRadarChart"></canvas></div>
-            </section>
+            <div class="pdf-page">
+  <section class="card">
+    <h3 class="section-title">종합 레이더 차트</h3>
+    <div class="radar-wrap"><canvas id="resultRadarChart"></canvas></div>
+  </section>
+</div>
 
-            <section class="card">
-              <h3 class="section-title">카테고리별 점수 비교</h3>
-              <div class="result-grid">${summaryCards}</div>
-            </section>
+<div class="pdf-page pdf-page-break">
+  <section class="card">
+    <h3 class="section-title">카테고리별 점수 비교</h3>
+    <div class="result-grid">${summaryCards}</div>
+  </section>
+</div>
 
-            <section class="card">
-              <h3 class="section-title">카테고리별 문항 비교</h3>
-              <div class="mini-grid">${categoryChartsHtml}</div>
-            </section>
+<div class="pdf-page pdf-page-break">
+  <section class="card">
+    <h3 class="section-title">카테고리별 문항 비교</h3>
+    <div class="mini-grid">${categoryChartsHtml}</div>
+  </section>
+</div>
 
-            <div class="pdf-action-bar">
-              <button class="pdf-button" id="printPdfButton">PDF로 저장하기</button>
-            </div>
+<div class="pdf-action-bar">
+  <button class="pdf-button" id="printPdfButton">PDF로 저장하기</button>
+</div>
           </div>
 
           <script>
