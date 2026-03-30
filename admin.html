@@ -619,11 +619,139 @@
             .mini-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
             .pdf-action-bar { margin-top:22px; display:flex; justify-content:center; }
             .pdf-button { border:none; border-radius:999px; padding:14px 24px; background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 12px 24px rgba(29,78,216,.18); }
-            @media print {
-              body { background:#fff; padding:0; }
-              .card { box-shadow:none; }
-              .pdf-action-bar { display:none; }
-            }
+            @page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  html, body {
+    width: 210mm;
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    font-size: 11pt !important;
+    line-height: 1.45 !important;
+  }
+
+  .wrap {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #dbe2ea !important;
+    border-radius: 14px !important;
+    margin-bottom: 10mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .hero-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .hero-band {
+    height: 10px !important;
+  }
+
+  .pdf-action-bar {
+    display: none !important;
+  }
+
+  .report-head {
+    display: block !important;
+    padding: 18px 18px 0 !important;
+  }
+
+  .report-title {
+    font-size: 22pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .report-subtitle {
+    font-size: 10pt !important;
+    line-height: 1.5 !important;
+  }
+
+  .profile-layout {
+    display: block !important;
+    padding: 18px !important;
+  }
+
+  .company {
+    font-size: 24pt !important;
+    line-height: 1.1 !important;
+  }
+
+  .name {
+    font-size: 18pt !important;
+  }
+
+  .role-line,
+  .summary-strip,
+  .info-value {
+    font-size: 10pt !important;
+  }
+
+  .summary-strip {
+    gap: 10px !important;
+  }
+
+  .info-panel {
+    margin-top: 14px !important;
+  }
+
+  .section-title {
+    font-size: 16pt !important;
+    margin-bottom: 10px !important;
+  }
+
+  .radar-wrap {
+    height: 250px !important;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .mini-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .mini-card,
+  .result-item,
+  .info-panel {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .mini-chart-wrap {
+    height: 210px !important;
+  }
+
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  button {
+    display: none !important;
+  }
+}
           </style>
         </head>
         <body>
